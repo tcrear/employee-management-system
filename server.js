@@ -1,7 +1,5 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-// const consoletable = require('console.table');
-
 
 require('dotenv').config();
 
@@ -40,7 +38,7 @@ function init() {
             process.exit(1)
         }
     })
-}
+};
 
 const initQuestion = [
     {
@@ -54,26 +52,11 @@ const initQuestion = [
 const addDepQuestion = [
     {
         type: 'input',
-        message: 'What is the name of the department?',
+        message: 'Name of department?',
         name: 'addDepartmentAnswer'
     }
 ];
 
-const addRoleQuestion = [
-    {
-        type: 'input',
-        message: 'What is the name of the role?',
-        name: 'addDepartmentAnswer'
-    }
-];
-
-const addDepQuestion = [
-    {
-        type: 'input',
-        message: 'What is the name of the department?',
-        name: 'addDepartmentAnswer'
-    }
-];
 
 function viewEmployees() {
     db.query('SELECT * FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id' , function (err, results) {
@@ -100,16 +83,17 @@ function viewRoles() {
 };
 
 function viewDepartments() {
-
-
-
-
-function addEmployee() {
-
-
-function addRole() {
-
-        
+    db.query('SELECT * FROM department' , function (err, results) {
+        if (results){
+            console.table(results);
+            init();
+        } else {
+            console.log(err);
+            init();
+        };
+    })
+};
+       
 
 function addDepartment() {
     inquirer.prompt(addDepQuestion)
@@ -123,8 +107,31 @@ function addDepartment() {
     })
 };
 
-function updateEmployee() {
-    
-
-
+function addEmployee() {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT id, title AS name FROM role`, (err, res) => {
+            if (err) reject(err);
+            resolve(res);
+        })
+    })
 };
+
+
+function addRole() {
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM department', (err, res) => {
+            if (err) reject(err);
+            resolve(res);
+        })
+    })
+};
+
+function updateEmployee() {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT id, CONCAT(employee.first_name, ' ', employee.last_name) AS name FROM employee`, (err, res) => {
+            if (err) reject(err);
+            resolve(res);
+        })
+    })
+};
+
