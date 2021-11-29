@@ -14,7 +14,6 @@ const db = mysql.createConnection(
 
 db.connect((err) => {
     if(err) throw err;
-    init()
 })
 
 function init() {
@@ -147,7 +146,7 @@ function viewDepartments() {
 
 function addEmployee() {
     return new Promise((resolve, reject) => {
-        db.query(`SELECT id, title AS name FROM role`, (err, res) => {
+        db.query(`SELECT id, title AS name FROM roles`, (err, res) => {
             if (err) reject(err);
             resolve(res);
         })
@@ -156,7 +155,7 @@ function addEmployee() {
 
 function addEmployeeQuery() {
     return new Promise((resolve, reject) => {
-        db.query(`SELECT id, title AS name FROM role`, (err, res) => {
+        db.query(`SELECT id, title AS name FROM roles`, (err, res) => {
             if (err) reject(err);
             resolve(res);
         })
@@ -246,7 +245,7 @@ async function addRole() {
             name: 'departmentRole'
         }
     ]).then(resp => {
-        db.query('INSERT INTO role(title, salary, department_id) VALUES (?, ?, ?)', [resp.nameRole, resp.salaryRole, resp.departmentRole], (err, results) => {
+        db.query('INSERT INTO roles(title, salary, department_id) VALUES (?, ?, ?)', [resp.nameRole, resp.salaryRole, resp.departmentRole], (err, results) => {
             if (results){
                 console.log('Role added');
                 init();
@@ -279,7 +278,7 @@ function updateEmployeeQuery() {
 
 function updateEmployeeQueryRole() {
     return new Promise((resolve, reject) => {
-        db.query('SELECT id, title AS name FROM role', (err, res) => {
+        db.query('SELECT id, title AS name FROM roles', (err, res) => {
             if (err) reject(err);
             resolve(res);
         })
