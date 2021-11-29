@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/tcrear/employee-management-system#readme",
   "dependencies": {
+    "console.table": "^0.10.0",
+    "dotenv": "^10.0.0",
     "inquirer": "^8.2.0",
     "mysql2": "^2.3.3"
   }
