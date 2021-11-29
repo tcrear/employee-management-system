@@ -116,6 +116,49 @@ function addEmployee() {
     })
 };
 
+async function addEmployee() {
+    let dbQueryRole = await addEmployee();
+    let queryRole = dbQueryRole.map(({id, name}) => ({name: name, value: id}));
+
+    let dbQueryManager = await addEmployeeManager();
+    let queryManager = dbQueryManager.map(({id, name}) => ({name: name, value: id}));
+
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: "Employee First Name?",
+            name: 'firstName'
+        },
+        {
+            type: 'input',
+            message: "Employee Last Name?",
+            name: 'lastName'
+        },
+        {
+            type: 'list',
+            message: "Employee Role?",
+            choices: queryRole, 
+            name: 'empRole'
+        },
+        {
+            type: 'list',
+            message: "Employee Manager?",
+            choices: queryManager,
+            name: 'empManager'
+        }
+    ]).then(resp => {
+        db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [resp.firstName, resp.lastName, resp.empRole, resp.empManager], (err, results) => {
+            if (results){
+                console.log('Employee added');
+                init()
+            } else {
+                console.log(`Employee error`);
+                init();
+            }
+        })
+    })
+};
+
 
 function addRole() {
     return new Promise((resolve, reject) => {
