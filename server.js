@@ -116,7 +116,69 @@ function addEmployee() {
     })
 };
 
-function addRole() {
+function addEmployeeQuery() {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT id, title AS name FROM role`, (err, res) => {
+            if (err) reject(err);
+            resolve(res);
+        })
+    })
+};
+
+function addEmployeeQueryManager() {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT id, manager_id, CONCAT(employee.first_name, ' ', employee.last_name) AS name FROM employee`, (err, res) => {
+            if (err) reject(err);
+            resolve(res);
+        })
+    })
+};
+
+async function addEmployee() {
+    let dbQueryEmp = await addEmployeeQuery();
+    let queryChoicesEmp = dbQueryEmp.map(({id, name}) => ({name: name, value: id}));
+
+    let dbQueryMgr = await addEmployeeQueryManager();
+    let queryChoicesMgr = dbQueryMgr.map(({id, name}) => ({name: name, value: id}));
+
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: "Employee first name?",
+            name: 'empFirstName'
+        },
+        {
+            type: 'input',
+            message: "Employee last name",
+            name: 'empLastName'
+        },
+        {
+            type: 'list',
+            message: "Employee Role?",
+            choices: queryChoicesEmp, 
+            name: 'empRole'
+        },
+        {
+            type: 'list',
+            message: "Manager Name?",
+            choices: queryChoicesMgr, 
+            name: 'empManager'
+        }
+    ]).then(resp => {
+        db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [resp.empFirstName, resp.empLastName, resp.empRole, resp.empManager], (err, results) => {
+            if (results){
+                console.log('Employee added');
+                init()
+            } else {
+                console.log(`Employee error`);
+                init();
+            }
+        })
+    })
+};
+
+
+function addRoleNew() {
     return new Promise((resolve, reject) => {
         db.query('SELECT * FROM department', (err, res) => {
             if (err) reject(err);
@@ -126,8 +188,8 @@ function addRole() {
 };
 
 async function addRole() {
-    let dbQuery = await addRoleQuery();
-    let queryChoices = dbQuery.map(({id, name}) => ({name: name, value: id}))
+    let dbQuery = await addRoleNew();
+    let queryAnswer = dbQuery.map(({id, name}) => ({name: name, value: id}))
     inquirer.prompt([
         {
             type: 'input',
@@ -142,7 +204,7 @@ async function addRole() {
         {
             type: 'list',
             message: 'Department of role?',
-            choices: queryChoices,
+            choices: queryAnswer,
             name: 'departmentRole'
         }
     ]).then(resp => {
@@ -168,6 +230,55 @@ function updateEmployee() {
 };
 
 
+function updateEmployeeQuery() {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT id, CONCAT(employee.first_name, ' ', employee.last_name) AS name FROM employee`, (err, res) => {
+            if (err) reject(err);
+            resolve(res);
+        })
+    })
+};
+
+function updateEmployeeQueryRole() {
+    return new Promise((resolve, reject) => {
+        db.query('SELECT id, title AS name FROM role', (err, res) => {
+            if (err) reject(err);
+            resolve(res);
+        })
+    })
+};
+
+async function updateEmployee() {
+    let dbQueryEmpUpdate = await updateEmployeeQuery();
+    let queryUpdate = dbQueryEmpUpdate.map(({id, name}) => ({name: name, value:id})) 
+
+    let dbQueryRole = await updateEmployeeQueryRole();
+    let queryRole = dbQueryRole.map(({id, name}) => ({name: name, value:id}))
+
+    inquirer.prompt([
+        {
+            type: 'list',
+            message: "Select the employee that you would like to update?",
+            choices: queryUpdate,
+            name: 'empName'
+        },
+        {
+            type: 'list',
+            message: 'Select new role?',
+            choices: queryRole,
+            name: 'empRoleNew'
+        }
+    ]).then(resp => {
+        db.query('UPDATE employee SET role_id = (?)  WHERE id = (?)', [resp.empRoleNew, resp.empName], (err, results) => {
+            if (results){
+                console.log('Employee updated');
+                init();
+            } else {
+                console.log(`Employee error`);
+                init();
+            }
+        })
+    })
+};
 
 init();
-
