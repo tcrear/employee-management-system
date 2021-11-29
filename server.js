@@ -120,7 +120,7 @@ async function addEmployee() {
     let dbQueryRole = await addEmployee();
     let queryRole = dbQueryRole.map(({id, name}) => ({name: name, value: id}));
 
-    let dbQueryManager = await addEmployeeManager();
+    let dbQueryManager = await addEmployee();
     let queryManager = dbQueryManager.map(({id, name}) => ({name: name, value: id}));
 
     inquirer.prompt([
@@ -157,7 +157,7 @@ async function addEmployee() {
             }
         })
     })
-};
+}
 
 
 function addRole() {
@@ -177,4 +177,6 @@ function updateEmployee() {
         })
     })
 };
+
+init();
 
