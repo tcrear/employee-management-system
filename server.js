@@ -49,7 +49,27 @@ const initQuestion = [
     }
 ];
 
-const addDepQuestion = [
+const addEmpQuestion = [
+    {
+        type: 'input',
+        message: 'Name of Employee?',
+        name: 'addEmpAnswer'
+    }
+];
+
+function addEmployee() {
+    inquirer.prompt(addEmpQuestion)
+    .then(({addEmpAnswer}) => {
+        console.log(addEmpAnswer)
+        db.query(`INSERT INTO department (department_name) VALUES ("${addEmpAnswer}")`, (err, results) => {
+            if(err) throw err;
+            init();
+        })        
+
+    })
+};
+
+const addDepartmentQuestion = [
     {
         type: 'input',
         message: 'Name of department?',
@@ -57,6 +77,36 @@ const addDepQuestion = [
     }
 ];
 
+function addDepartment() {
+    inquirer.prompt(addDepartmentQuestion)
+    .then(({addDepartmentAnswer}) => {
+        console.log(addDepartmentAnswer)
+        db.query(`INSERT INTO department (department_name) VALUES ("${addDepartmentAnswer}")`, (err, results) => {
+            if(err) throw err;
+            init();
+        })        
+
+    })
+};
+
+const addRoleQuestion = [
+    {
+        type: 'input',
+        message: 'Name of role?',
+        name: 'addRoleAnswer'
+    }
+];
+
+function addRole() {
+    inquirer.prompt(addRoleQuestion)
+    .then(({addRoleAnswer}) => {
+        console.log(addRoleAnswer)
+        db.query(`INSERT INTO department (department_name) VALUES ("${addRoleAnswer}")`, (err, results) => {
+            if(err) throw err;
+            init();
+        })        
+    })
+};
 
 function viewEmployees() {
     db.query('SELECT * FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id' , function (err, results) {
@@ -93,19 +143,7 @@ function viewDepartments() {
         };
     })
 };
-       
-
-function addDepartment() {
-    inquirer.prompt(addDepQuestion)
-    .then(({addDepartmentAnswer}) => {
-        console.log(addDepartmentAnswer)
-        db.query(`INSERT INTO department (department_name) VALUES ("${addDepartmentAnswer}")`, (err, results) => {
-            if(err) throw err;
-            init();
-        })        
-
-    })
-};
+    
 
 function addEmployee() {
     return new Promise((resolve, reject) => {
